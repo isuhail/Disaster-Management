@@ -4,11 +4,12 @@ nltk.download(['punkt', 'wordnet', 'averaged_perceptron_tagger'])
 
 import pandas as pd
 import numpy as np
+import pickle
 from sqlalchemy import create_engine
 from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix,classification_report
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
@@ -22,7 +23,8 @@ def load_data(database_filepath):
     df = pd.read_sql_table('DisasterResponse',con=engine)
     X = df.message 
     y = df.iloc[:,4:]
-    return X,y,y.columns
+    a=list(y.columns)
+    return X,y,a
 
 def tokenize(text):
     tokens=word_tokenize(text)
@@ -56,7 +58,8 @@ def build_model():
 
 def evaluate_model(model, X_test, Y_test, category_names):
     y_pred = model.predict(X_test)
-    for n, column in category_names:
+    a=list(range(len(category_names)))
+    for n, column in zip(a,category_names):
         print(column, classification_report(Y_test.iloc[:,n],y_pred[:,n]))
 
 
